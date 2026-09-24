@@ -11,6 +11,13 @@ type ItemCheckout = {
     imagenUrl: string
 }
 
+function obtenerUrlBase() {
+    if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}`
+    }
+    return 'http://localhost:3000'
+}
+
 export async function crearSesionCheckout(items: ItemCheckout[]) {
     const session = await stripe.checkout.sessions.create({
         mode: 'payment',
@@ -25,8 +32,8 @@ export async function crearSesionCheckout(items: ItemCheckout[]) {
             },
             quantity: item.cantidad,
         })),
-        success_url: `http://localhost:3000/checkout/exito?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `http://localhost:3000/carrito`,
+        success_url: `${obtenerUrlBase()}/checkout/exito?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${obtenerUrlBase()}/carrito`,
     })
 
     if (session.url) {
